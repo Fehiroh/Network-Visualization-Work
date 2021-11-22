@@ -63,9 +63,11 @@ e_good = [(u, v) for (u, v, d) in G.edges(data=True) if d["weight"] >= 0.5 if d[
 e_great = [(u, v) for (u, v, d) in G.edges(data=True) if d["weight"] >= 0.75]
 
 pos = nx.spring_layout(G, iterations=600)
+```
 
 ```
 # Starting plotting
+
 fig, ax = plt.subplots(1,figsize=(15,14))
 ax = plt.gca()
 ax.set_title('Comparing Positions: Skillset Similarity and Salary Differential',
