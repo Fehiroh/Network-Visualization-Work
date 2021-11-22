@@ -129,3 +129,6 @@ fig.legend(loc="lower left", bbox_to_anchor=(0.13, 0.215, 0.5, 0.4), title= "Leg
           markerscale = 0.4)
 plt.savefig('position_skillset_similarity.jpg')
 ```
+
+# Output: 
+![Drag Racing](https://github.com/Fehiroh/Network-Visualization-Work/blob/main/position_skillset_similarity.jpg)
