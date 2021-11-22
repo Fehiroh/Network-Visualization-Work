@@ -5,18 +5,22 @@ An algorithm I wrote as part of a project to link positions within a company via
 ## Results
 ![Drag Racing](https://github.com/Fehiroh/Network-Visualization-Work/blob/main/position_skillset_similarity.jpg)
 
-`
+## Initial Imports
+```
 import itertools
 import random
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D 
-`
-
+```
+## Creating the initial 
+```
 series = "123456789"
 nodes = list(series)
 random.seed(4242)
+```
 
 # Label one position as current posttion 
+```
 current_position = nodes[random.randint(0,len(nodes)-1)]
 
 #Create fake salaries to drive Directionality of Graph
@@ -35,9 +39,11 @@ lower_salaries_than_starting = [x for x  in nodes if node_salaries[x] < node_sal
 combo_relationships = {}
 for i in range(len(combos)):
     combo_relationships[combos[i]] = {"weight" : (random.randint(1, 100)/100)}
+```
 
     
 # The Network
+```
 import networkx as nx
 G = nx.DiGraph()
 
@@ -56,10 +62,9 @@ e_okay = [(u, v) for (u, v, d) in G.edges(data=True) if d["weight"] >= 0.25 if d
 e_good = [(u, v) for (u, v, d) in G.edges(data=True) if d["weight"] >= 0.5 if d["weight"] < .75]
 e_great = [(u, v) for (u, v, d) in G.edges(data=True) if d["weight"] >= 0.75]
 
-
-
 pos = nx.spring_layout(G, iterations=600)
 
+```
 # Starting plotting
 fig, ax = plt.subplots(1,figsize=(15,14))
 ax = plt.gca()
@@ -107,3 +112,4 @@ ax.legend(loc ="lower left", handles=custom_lines, title = "Legend for Edges", t
 fig.legend(loc="lower left", bbox_to_anchor=(0.13, 0.215, 0.5, 0.4), title= "Legend for Nodes", title_fontsize = 'large', 
           markerscale = 0.4)
 plt.savefig('position_skillset_similarity.jpg')
+```
