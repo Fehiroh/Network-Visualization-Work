@@ -1,18 +1,19 @@
-# Network-Visualization-Work
-An algorithm I wrote as part of a project to link positions within a company via network graph as a means of promoting internal career pathing. 
-
+# Template for Network-Based Career Mapping Visualization
+Have you ever wanted to know what your next few positions within a company should be based on your current skills and the differences in salary between positions? Did you ever want to increase retention and foster prolonged development amongst your workforce? Well, I certainly wanted to do both, and I wrote this algorithm as a preliminary step in deploying such a solution. 
 
 ## Results
 ![Drag Racing](https://github.com/Fehiroh/Network-Visualization-Work/blob/main/position_skillset_similarity.jpg)
 
 ## Initial Imports
+We're going to be using itertools to generate edges in a computationally efficient manner (we only have nine nodes in this example, but I code for scalability out of habit), random for obvious reasons, and Matplotlib for visualization. Funnily enough, Line2D only gets used to draw the legend.  
 ```
 import itertools
 import random
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D 
 ```
-## Creating the initial 
+## Creating the Initial Seed and Nodes
+In order to create a randomized (but reproducable) network graph, we will create nine nodes, and set the seed for randomization to '4242' in honour of Douglas Adams. 
 ```
 series = "123456789"
 nodes = list(series)
@@ -20,7 +21,9 @@ random.seed(4242)
 ```
 
 # Label one position as current posttion 
+Because this project is based on acting as a career map, one node must be the current position an Employee has within the company, and all of the other nodes are in relation 
 ```
+# Set a random node to be the position an employee currently occupies
 current_position = nodes[random.randint(0,len(nodes)-1)]
 
 #Create fake salaries to drive Directionality of Graph
@@ -31,11 +34,12 @@ for i in range(len(nodes)):
 # Create edges for each possible connection, based on values in node salary     
 combos = [x for x in itertools.permutations(series, 2) 
           if node_salaries[x[0]] < node_salaries[x[1]]]
-
-
+          
 lower_salaries_than_starting = [x for x  in nodes if node_salaries[x] < node_salaries[current_position]]
 
-# Generate  similarity 
+# Generate  Similarity of Positions [ie, nodes]
+#       (In a real-world example, this would be based off of the scaled distance between two nodes in n-dimensional space derived from a skills inventory) 
+inventory to a value between 0 and 1)
 combo_relationships = {}
 for i in range(len(combos)):
     combo_relationships[combos[i]] = {"weight" : (random.randint(1, 100)/100)}
