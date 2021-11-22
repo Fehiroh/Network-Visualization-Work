@@ -1,11 +1,12 @@
 # Template for Network-Based Career Mapping Visualization
-Have you ever wanted to know what your next few positions within a company should be based on your current skills and the differences in salary between positions? Did you ever want to increase retention and foster prolonged development amongst your workforce? Well, I certainly wanted to do both, and I wrote this algorithm as a preliminary step in deploying such a solution. 
+Have you ever wanted to know what your next few positions within a company should be based on your current skills and the differences in salary between positions? Did you ever want to increase retention and foster prolonged development amongst your workforce? Well, I certainly wanted to do both, and I wrote this visualization algorithm as a preliminary step / PoC in deploying such a solution. 
 
 ## Results
 ![Drag Racing](https://github.com/Fehiroh/Network-Visualization-Work/blob/main/position_skillset_similarity.jpg)
+Explanation: 
 
 ## Initial Imports
-We're going to be using itertools to generate edges in a computationally efficient manner (we only have nine nodes in this example, but I code for scalability out of habit), random for obvious reasons, and Matplotlib for visualization. Funnily enough, Line2D only gets used to draw the legend.  
+We're going to be using itertools to generate edges in a computationally efficient manner (we only have nine nodes in this example, but I code for scalability out of habit), random in order to randomize the inputs while maintaining reproducability, and Matplotlib for visualization. Funnily enough, despite lines playing a critical role in almost all network graphs, Line2D only gets used to draw the legend.  
 ```
 import itertools
 import random
@@ -20,12 +21,15 @@ nodes = list(series)
 random.seed(4242)
 ```
 
-# Label one position as current posttion 
-Because this project is based on acting as a career map, one node must be the current position an Employee has within the company, and all of the other nodes are in relation 
+# Setting up the Nodes and Edges 
+Because this project is centered on creating a template for career map visualization, it makes sense that one node must be the current position an Employee has within the company. We randomly select that node. In an actual deployment, the position of a given employee would be either be fed into the visualation function as a parameter, or the deployment would be interactive, in which case there would be a dropdown with all positions within the company.  
 ```
 # Set a random node to be the position an employee currently occupies
 current_position = nodes[random.randint(0,len(nodes)-1)]
+```
+After determining the starting position, we generate the salaries of each position. Most career moves are done with compensation in mind, so we are going to use these to direct the edges of the graph so that the arrows point towards positions that have higher compensation. Going for higher compensation with a position change isn't always the case, but it adds readability and creates a clearer "path". Practically, we only add directional edges from a lower paying position to a higher paying one.  
 
+```
 #Create fake salaries to drive Directionality of Graph
 node_salaries = {}
 for i in range(len(nodes)):
@@ -34,12 +38,17 @@ for i in range(len(nodes)):
 # Create edges for each possible connection, based on values in node salary     
 combos = [x for x in itertools.permutations(series, 2) 
           if node_salaries[x[0]] < node_salaries[x[1]]]
-          
-lower_salaries_than_starting = [x for x  in nodes if node_salaries[x] < node_salaries[current_position]]
+```
 
+Similarly, the next step is to determine which nodes have a lower salary than the position an employee currently holds. This list is used later in order to distinguish careers that would be a step-down for the employee so that they can focus on where they are likely to go. We don't remove these entirely, as they can sometimes form stepping stones to higher paying positions that are too disimilar (skillwise) to the starting position to be a tenable next position. This maintains a nice balance between making the graph easy to read for those focused on immediate and obvious moves while allowing employees to consider less traditional paths. 
+
+```   
+lower_salaries_than_starting = [x for x  in nodes if node_salaries[x] < node_salaries[current_position]]
+```
+
+Having mentioned skillset discrepancies between positions, it's now time to generate a random value for each edges that falls between 0 and 1. In a realworld situation, this can be generated a number of ways. My personal favorite is a three step solution. Firstly, you'd need to create a company-wide skill inventory, where every skill for every position is listed and levels of proficiency are described in concrete terms. Next, Hiring Managers and Talent Acquisition would collaborate in order to assign a score for each skill required to hold each position.  In the cases where a given skill isn't needed (JavaScript for Custodial staff, for instance), you simply assign the position a 0. Next, you can treat these skills as spatial dimensions and measure the distance between positions then scale the positions to fall between 0 and 1. 
+```
 # Generate  Similarity of Positions [ie, nodes]
-#       (In a real-world example, this would be based off of the scaled distance between two nodes in n-dimensional space derived from a skills inventory) 
-inventory to a value between 0 and 1)
 combo_relationships = {}
 for i in range(len(combos)):
     combo_relationships[combos[i]] = {"weight" : (random.randint(1, 100)/100)}
@@ -47,6 +56,7 @@ for i in range(len(combos)):
 
     
 # The Network
+Okay, after a lot of setup, the graph object can finally be created and we can begin to populate it with nodes and edges. We note which nodes are not the current position, add our edges that show skillset similarity and salary differential, and then create several edgesets. These are tuples within a list that we will use to visually differentiate similar positions from disimilar positions.  We also organize the nodes according to their similarity using 600 iterations of the Fruchterman-Reingold force-directed algorithm.
 ```
 import networkx as nx
 G = nx.DiGraph()
@@ -68,7 +78,7 @@ e_great = [(u, v) for (u, v, d) in G.edges(data=True) if d["weight"] >= 0.75]
 
 pos = nx.spring_layout(G, iterations=600)
 ```
-
+## Plotting the Network / Career Map
 ```
 # Starting plotting
 
